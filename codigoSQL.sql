@@ -100,3 +100,48 @@ join empregado as empregado
 on departamento.numero = empregado.depto
 group by departamento.nome, departamento.numero
 having sum(empregado.salario) >= 6000;
+
+-- Exercicio subconsulta
+-- Exercicio 1
+select empregado.nome, empregado.rg, empregado.cpf, departamento.nome, empregado.salario
+from empregado as empregado
+join departamento as departamento
+on empregado.rg = departamento.rg_gerente
+where salario > (select avg(salario) from empregado);
+
+-- Exercicio 2
+select empregado.nome, empregado.rg, empregado.cpf, departamento.nome, empregado.salario, departamento.numero, (select avg(salario) from empregado)
+from empregado as empregado
+join departamento as departamento
+on empregado.rg = departamento.rg_gerente
+where salario > (select avg(salario) from empregado);
+
+-- Exercicio 3
+select empregado.nome, empregado.rg from empregado
+where empregado.rg not in (select rg from historico_salario);
+
+-- Exercicio 4
+select empregado.* from empregado 
+where salario < (select avg(salario) from historico_salario)
+
+-- Exercicio 5
+select empregado.* from empregado 
+where salario between (select min(salario) + 1000 from empregado) 
+and (select avg(salario)+ 1000 from empregado)
+
+-- Exercicio 6
+select empregado.* from empregado 
+where salario between (select avg(salario) - stddev(salario) from empregado) 
+and (select avg(salario) + stddev(salario) from empregado)
+
+-- Exercicio 7
+select empregado.nome, count(empregado.depto) as qtd_projetos_trabalha,
+projeto.nome
+from empregado_projeto inner
+join projeto 
+on (projeto.numero = empregado_projeto.numero_projeto)
+join empregado
+on (empregado.rg=empregado_projeto.rg_empregado)
+group by empregado.nome ,projeto.nome
+order by empregado.nome asc
+
