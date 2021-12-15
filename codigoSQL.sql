@@ -50,3 +50,53 @@ sum(salario), avg(salario), min(salario), max(salario), stddev(salario) from emp
 inner join departamento D on(E.depto = D.numero) 
 where E.depto in (select distinct numero from departamento) GROUP BY D.Nome;
 
+
+-- Exercícios de Agrupamento com Junção
+-- Exercicio 1
+select empregado.rg, empregado.nome, dependente.rg_responsavel, dependente.nome_dependente
+from empregado as empregado 
+join dependente as dependente 
+on empregado.rg = dependente.rg_responsavel;
+
+select empregado.rg, empregado.nome, count(dependente.nome_dependente) as numero_dependentes
+from empregado as empregado 
+join dependente as dependente 
+on empregado.rg = dependente.rg_responsavel 
+group by empregado.rg, empregado.nome;
+
+-- Exercicio 2
+select empregado.rg, empregado.nome, count(empregado_projeto.numero_projeto) as numero_projetos
+from empregado as empregado
+join empregado_projeto as empregado_projeto
+on empregado.rg = empregado_projeto.rg_empregado
+group by empregado.rg, empregado.nome;
+
+-- Exercicio 3
+select empregado.nome, empregado.rg, sum(empregado_projeto.horas) as horas_projeto
+from empregado as empregado
+join empregado_projeto as empregado_projeto
+on empregado.rg = empregado_projeto.rg_empregado
+group by empregado.nome, empregado.rg order by sum(empregado_projeto.horas);
+
+--Exercicio 4
+select departamento.numero, count(empregado.rg) as numero_empregados
+from departamento as departamento
+join empregado as empregado
+on departamento.numero = empregado.depto
+group by departamento.numero;
+
+--Exercicio 5
+select departamento.nome, departamento.numero, count(empregado.rg) as numero_empregados
+from departamento as departamento
+join empregado as empregado
+on departamento.numero = empregado.depto
+group by departamento.nome, departamento.numero
+having count(empregado.rg) >= 3;
+
+--Exercicio 6
+select departamento.nome, departamento.numero, sum(empregado.salario) as soma_salarios
+from departamento as departamento
+join empregado as empregado
+on departamento.numero = empregado.depto
+group by departamento.nome, departamento.numero
+having sum(empregado.salario) >= 6000;
